@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `divide` fn in crate `parallel`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, divide">
+
+    <title>parallel::divide - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='index.html'>parallel</a></p><div class='block fn'><h2>Functions</h2><a class='fn current' href='fn.divide.html' title='Parallelizes an `operation` over a mutable slice'>divide</a></div>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content fn">
+<h1 class='fqn'><span class='in-band'>Function <a href='index.html'>parallel</a>::<wbr><a class='fn' href=''>divide</a><wbr></span><span class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-8' href='../src/parallel/divide.rs.html#40-56'>[src]</a></span></h1>
+<pre class='rust fn'>pub fn divide&lt;T, F&gt;(data: <a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;mut [T]</a>, granularity: <a href='http://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, operation: F) <span class='where'>where T: <a class='trait' href='http://doc.rust-lang.org/nightly/core/marker/trait.Send.html' title='core::marker::Send'>Send</a>, F: <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.Fn.html' title='core::ops::Fn'>Fn</a>(<a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;mut [T]</a>, <a href='http://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) + <a class='trait' href='http://doc.rust-lang.org/nightly/core/marker/trait.Sync.html' title='core::marker::Sync'>Sync</a></span></pre><div class='docblock'><p>Parallelizes an <code>operation</code> over a mutable slice</p>
+
+<p>The <code>data</code> will be divided in chunks of <code>granularity</code> size. A new thread will be spawned to
+&quot;operate&quot; over each chunk.</p>
+
+<p><code>operation</code> will receive two arguments:</p>
+
+<ul>
+<li>The mutable chunk of data, and</li>
+<li>The offset of this chunk from the start of <code>data</code></li>
+</ul>
+
+<h1 id="panics" class='section-header'><a
+                           href="#panics">Panics</a></h1>
+<p>Panics if any of the underlying threads panics</p>
+
+<h1 id="example" class='section-header'><a
+                           href="#example">Example</a></h1>
+<p>Parallel map</p>
+<pre id='rust-example-rendered' class='rust '>
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>parallel</span>;
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>rand</span>;
+
+<span class='kw'>use</span> <span class='ident'>rand</span>::{<span class='ident'>Rng</span>, <span class='ident'>XorShiftRng</span>};
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>num</span>::<span class='ident'>Float</span>;
+
+<span class='kw'>let</span> <span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>rng</span>: <span class='ident'>XorShiftRng</span> <span class='op'>=</span> <span class='ident'>rand</span>::<span class='ident'>thread_rng</span>().<span class='ident'>gen</span>();
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>v</span> <span class='op'>=</span> (<span class='number'>0</span>..<span class='number'>1_000</span>).<span class='ident'>map</span>(<span class='op'>|</span>_<span class='op'>|</span> <span class='ident'>rng</span>.<span class='ident'>gen</span>::<span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>()).<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span>_<span class='op'>&gt;&gt;</span>();
+<span class='ident'>parallel</span>::<span class='ident'>divide</span>(<span class='ident'>v</span>.<span class='ident'>as_mut_slice</span>(), <span class='number'>100</span>, <span class='op'>|</span><span class='ident'>data</span>, _<span class='op'>|</span> {
+    <span class='kw'>for</span> <span class='ident'>x</span> <span class='kw'>in</span> <span class='ident'>data</span>.<span class='ident'>iter_mut</span>() {
+        <span class='op'>*</span><span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>x</span>.<span class='ident'>sin</span>();
+    }
+});
+</pre>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "parallel";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script async src="../search-index.js"></script>
+</body>
+</html>
